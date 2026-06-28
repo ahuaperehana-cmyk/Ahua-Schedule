@@ -4,8 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ahua perehana — Schedule</title>
-<link rel="manifest" href="/manifest.json">
+<link rel="manifest" href="/Ahua-Schedule/manifest.json">
 <meta name="theme-color" content="#1a1a1a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><rect fill='%237a9e7e' width='100%' height='100%'/><text x='50%' y='50%' font-size='80' fill='white' text-anchor='middle' dy='.3em' font-weight='bold'>📅</text></svg>">
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap');
 
@@ -259,6 +261,7 @@
   <nav>
     <button class="active" onclick="showView('schedule')">Schedule</button>
     <button onclick="showView('invoice')">Invoice</button>
+    <button onclick="window.location.href='/Ahua-Schedule/clock.html'">Clock</button>
   </nav>
 </header>
 
@@ -631,7 +634,7 @@
   // register service worker so the app can work offline and be installable
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/sw.js')
+      navigator.serviceWorker.register('/Ahua-Schedule/sw.js')
         .then(reg => console.log('Service worker registered:', reg.scope))
         .catch(err => console.warn('Service worker registration failed:', err));
     });
