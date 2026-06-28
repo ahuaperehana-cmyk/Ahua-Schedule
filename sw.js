@@ -1,8 +1,9 @@
 const CACHE_NAME = 'ahua-schedule-v1';
 const ASSETS = [
-  '/ahua-schedule-1.html',
-  '/manifest.json',
-  '/'
+  '/Ahua-Schedule/ahua-schedule-1.html',
+  '/Ahua-Schedule/clock.html',
+  '/Ahua-Schedule/manifest.json',
+  '/Ahua-Schedule/'
 ];
 
 self.addEventListener('install', (event) => {
@@ -39,8 +40,8 @@ self.addEventListener('fetch', (event) => {
         }
         return response;
       }).catch(() => {
-        // If both cache and network fail, you could return a fallback page here
-        return caches.match('/ahua-schedule-1.html');
+        // If both cache and network fail, return fallback page
+        return caches.match('/Ahua-Schedule/ahua-schedule-1.html');
       });
     })
   );
