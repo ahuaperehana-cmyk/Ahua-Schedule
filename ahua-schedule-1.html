@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ahua perehana — Schedule</title>
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#1a1a1a">
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap');
 
@@ -584,7 +586,7 @@
     const dateVal = document.getElementById('invDate').value;
     const dateStr = dateVal ? new Date(dateVal + 'T12:00:00').toLocaleDateString('en-AU', { day: '2-digit', month: '2-digit', year: 'numeric' }) : '—';
 
-    document.getElementById('prevInvNumber').textContent = `Order invoice for /${num}`;
+  document.getElementById('prevInvNumber').textContent = `Order invoice for /${num}`;
     document.getElementById('prevClient').textContent = client;
     document.getElementById('prevAddress').textContent = address;
     document.getElementById('prevDate').textContent = dateStr;
@@ -625,6 +627,15 @@
   document.getElementById('invDate').value = new Date().toISOString().split('T')[0];
   addLine('Domestic Clean', '3.0', '40.00');
   renderSchedule();
+
+  // register service worker so the app can work offline and be installable
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js')
+        .then(reg => console.log('Service worker registered:', reg.scope))
+        .catch(err => console.warn('Service worker registration failed:', err));
+    });
+  }
 </script>
 </body>
 </html>
