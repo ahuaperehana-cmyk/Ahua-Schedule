@@ -59,7 +59,6 @@
 
   .container { max-width: 900px; margin: 0 auto; padding: 24px 16px; }
 
-  /* SCHEDULE VIEW */
   .week-nav {
     display: flex; align-items: center; justify-content: space-between;
     margin-bottom: 20px;
@@ -93,7 +92,7 @@
   .day-col.today .day-header { background: var(--accent); color: var(--white); }
   .day-col.today .day-name { color: rgba(255,255,255,0.8); }
 
-  .day-jobs { padding: 8px; display: flex; flex-direction: column; gap: 6px; }
+  .day-jobs { padding: 8px; display: flex; flex-direction: column; gap: 6px; overflow-y: auto; max-height: 300px; }
 
   .job-card {
     background: var(--accent-light);
@@ -103,14 +102,15 @@
     cursor: pointer;
     transition: opacity 0.2s;
     position: relative;
+    font-size: 0.75rem;
   }
   .job-card:hover { opacity: 0.85; }
-  .job-time { font-size: 0.68rem; color: var(--soft); font-weight: 500; }
-  .job-name { font-size: 0.78rem; font-weight: 600; margin-top: 1px; }
+  .job-time { font-size: 0.65rem; color: var(--soft); font-weight: 500; }
+  .job-name { font-size: 0.75rem; font-weight: 600; margin-top: 1px; word-break: break-word; }
   .job-delete {
-    position: absolute; top: 4px; right: 4px;
+    position: absolute; top: 2px; right: 2px;
     background: none; border: none; cursor: pointer;
-    color: var(--soft); font-size: 0.75rem; line-height: 1;
+    color: var(--soft); font-size: 0.7rem; line-height: 1;
     display: none;
   }
   .job-card:hover .job-delete { display: block; }
@@ -123,7 +123,6 @@
   }
   .add-job-btn:hover { background: var(--accent-light); color: var(--accent); }
 
-  /* MODAL */
   .modal-backdrop {
     display: none; position: fixed; inset: 0;
     background: rgba(0,0,0,0.5); z-index: 100;
@@ -138,35 +137,29 @@
   .modal h3 { font-family: 'Playfair Display', serif; font-size: 1.2rem; margin-bottom: 18px; }
   .form-group { margin-bottom: 14px; }
   .form-group label { display: block; font-size: 0.8rem; font-weight: 500; color: var(--soft); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.05em; }
-  .form-group input, .form-group textarea, .form-group select {
+  .form-group input, .form-group select {
     width: 100%; padding: 9px 12px;
     border: 1px solid var(--border); border-radius: 6px;
     font-family: 'Inter', sans-serif; font-size: 0.9rem;
     background: var(--cream); color: var(--ink);
   }
-  .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+  .form-group input:focus, .form-group select:focus {
     outline: none; border-color: var(--accent);
   }
   .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
   .btn-primary {
     flex: 1; background: var(--accent); color: white;
-    border: none; padding: 10px; border-radius: 6px;
+    border: none; padding: 12px; border-radius: 6px;
     font-family: 'Inter', sans-serif; font-size: 0.9rem;
-    font-weight: 500; cursor: pointer;
+    font-weight: 600; cursor: pointer;
   }
   .btn-secondary {
     background: none; border: 1px solid var(--border);
-    padding: 10px 18px; border-radius: 6px;
+    padding: 12px 18px; border-radius: 6px;
     font-family: 'Inter', sans-serif; font-size: 0.9rem;
     cursor: pointer; color: var(--soft);
   }
-  .btn-danger {
-    background: none; border: 1px solid var(--red);
-    color: var(--red); padding: 10px 14px; border-radius: 6px;
-    font-family: 'Inter', sans-serif; font-size: 0.9rem; cursor: pointer;
-  }
 
-  /* INVOICE VIEW */
   .invoice-section { display: none; }
   .invoice-section.active { display: block; }
   .schedule-section { display: block; }
@@ -207,7 +200,6 @@
   }
   .btn-generate:hover { background: var(--accent); }
 
-  /* INVOICE PREVIEW */
   .invoice-preview {
     background: var(--white); border-radius: 12px;
     padding: 40px; border: 1px solid var(--border);
@@ -231,9 +223,7 @@
   .inv-footer { margin-top: 30px; font-size: 0.82rem; color: var(--soft); }
   .inv-footer p { margin-bottom: 4px; }
   .inv-kia { font-family: 'Playfair Display', serif; font-size: 1.1rem; color: var(--ink); margin-bottom: 8px; font-style: italic; }
-
   .inv-number { font-size: 0.9rem; color: var(--soft); margin-bottom: 24px; }
-
   .print-btn {
     background: var(--ink); color: var(--cream);
     border: none; padding: 10px 22px; border-radius: 6px;
@@ -377,8 +367,8 @@
       <input type="text" id="jobClient" placeholder="e.g. Adam Lipszyc">
     </div>
     <div class="form-group">
-      <label>Time</label>
-      <input type="time" id="jobTime">
+      <label>Time (HH:MM)</label>
+      <input type="text" id="jobTime" placeholder="e.g. 09:30" pattern="[0-9]{2}:[0-9]{2}">
     </div>
     <div class="form-group">
       <label>Duration / Notes</label>
@@ -386,27 +376,25 @@
     </div>
     <div class="modal-actions">
       <button class="btn-secondary" onclick="closeModal()">Cancel</button>
-      <button class="btn-primary" onclick="saveJob()">Save</button>
+      <button class="btn-primary" onclick="saveJob()">Save Job</button>
     </div>
   </div>
 </div>
 
 <script>
-  // ---- DATA ----
   let jobs = JSON.parse(localStorage.getItem('ahua_jobs') || '{}');
   let currentWeekOffset = 0;
-  let editingJob = null; // {dayKey, jobId}
+  let editingJob = null;
   let addingDay = null;
 
   function saveData() {
     localStorage.setItem('ahua_jobs', JSON.stringify(jobs));
   }
 
-  // ---- DATE HELPERS ----
   function getWeekStart(offset = 0) {
     const now = new Date();
-    const day = now.getDay(); // 0=Sun
-    const diff = now.getDate() - day + (day === 0 ? -6 : 1); // Mon
+    const day = now.getDay();
+    const diff = now.getDate() - day + (day === 0 ? -6 : 1);
     const mon = new Date(now.setDate(diff + offset * 7));
     mon.setHours(0,0,0,0);
     return mon;
@@ -420,10 +408,10 @@
     return d.toLocaleDateString('en-AU', { day: 'numeric', month: 'short' });
   }
 
-  // ---- SCHEDULE ----
   function renderSchedule() {
     const weekStart = getWeekStart(currentWeekOffset);
-    const weekEnd = new Date(weekStart); weekEnd.setDate(weekEnd.getDate() + 6);
+    const weekEnd = new Date(weekStart);
+    weekEnd.setDate(weekEnd.getDate() + 6);
     document.getElementById('weekLabel').textContent = `${fmt(weekStart)} – ${fmt(weekEnd)}`;
 
     const grid = document.getElementById('weekGrid');
@@ -432,7 +420,8 @@
     const today = formatDate(new Date());
 
     for (let i = 0; i < 7; i++) {
-      const d = new Date(weekStart); d.setDate(d.getDate() + i);
+      const d = new Date(weekStart);
+      d.setDate(d.getDate() + i);
       const key = formatDate(d);
       const isToday = key === today;
 
@@ -450,13 +439,12 @@
 
       const jobsDiv = col.querySelector(`#jobs-${key}`);
 
-      // Render jobs
       const dayJobs = jobs[key] || [];
       dayJobs.forEach((job, idx) => {
         const card = document.createElement('div');
         card.className = 'job-card';
         card.innerHTML = `
-          <div class="job-time">${job.time || ''}</div>
+          <div class="job-time">${job.time || 'No time'}</div>
           <div class="job-name">${job.client}</div>
           ${job.notes ? `<div class="job-time">${job.notes}</div>` : ''}
           <button class="job-delete" onclick="deleteJob('${key}',${idx},event)" title="Remove">✕</button>
@@ -465,7 +453,6 @@
         jobsDiv.appendChild(card);
       });
 
-      // Add button
       const addBtn = document.createElement('button');
       addBtn.className = 'add-job-btn';
       addBtn.textContent = '+';
@@ -503,18 +490,28 @@
 
   function saveJob() {
     const client = document.getElementById('jobClient').value.trim();
-    if (!client) { alert('Please enter a client name.'); return; }
-    const job = {
-      client,
-      time: document.getElementById('jobTime').value,
-      notes: document.getElementById('jobNotes').value.trim()
-    };
+    const time = document.getElementById('jobTime').value.trim();
+    const notes = document.getElementById('jobNotes').value.trim();
+
+    if (!client) {
+      alert('Please enter a client name');
+      return;
+    }
+
+    if (!time) {
+      alert('Please enter a time (e.g. 09:30)');
+      return;
+    }
+
+    const job = { client, time, notes };
+
     if (editingJob) {
       jobs[editingJob.dayKey][editingJob.idx] = job;
     } else {
       if (!jobs[addingDay]) jobs[addingDay] = [];
       jobs[addingDay].push(job);
     }
+
     saveData();
     closeModal();
     renderSchedule();
@@ -522,22 +519,24 @@
 
   function deleteJob(dayKey, idx, e) {
     e.stopPropagation();
-    if (!confirm('Remove this job?')) return;
-    jobs[dayKey].splice(idx, 1);
-    saveData();
-    renderSchedule();
+    if (confirm('Remove this job?')) {
+      jobs[dayKey].splice(idx, 1);
+      saveData();
+      renderSchedule();
+    }
   }
 
   function closeModal() {
     document.getElementById('jobModal').classList.remove('open');
-    editingJob = null; addingDay = null;
+    editingJob = null;
+    addingDay = null;
   }
 
   document.getElementById('jobModal').addEventListener('click', function(e) {
     if (e.target === this) closeModal();
   });
 
-  // ---- INVOICE ----
+  // INVOICE CODE
   let lines = [];
 
   function addLine(desc='', hrs='', rate='') {
@@ -570,7 +569,10 @@
 
   function updateLine(id, field, val) {
     const line = lines.find(l => l.id === id);
-    if (line) { line[field] = val; updateTotal(); }
+    if (line) {
+      line[field] = val;
+      updateTotal();
+    }
   }
 
   function updateTotal() {
@@ -589,7 +591,7 @@
     const dateVal = document.getElementById('invDate').value;
     const dateStr = dateVal ? new Date(dateVal + 'T12:00:00').toLocaleDateString('en-AU', { day: '2-digit', month: '2-digit', year: 'numeric' }) : '—';
 
-  document.getElementById('prevInvNumber').textContent = `Order invoice for /${num}`;
+    document.getElementById('prevInvNumber').textContent = `Order invoice for /${num}`;
     document.getElementById('prevClient').textContent = client;
     document.getElementById('prevAddress').textContent = address;
     document.getElementById('prevDate').textContent = dateStr;
@@ -617,7 +619,6 @@
     document.getElementById('invoicePreview').scrollIntoView({ behavior: 'smooth' });
   }
 
-  // ---- VIEW SWITCHING ----
   function showView(view) {
     document.querySelectorAll('nav button').forEach((b,i) => {
       b.classList.toggle('active', (i===0 && view==='schedule') || (i===1 && view==='invoice'));
@@ -626,16 +627,15 @@
     document.getElementById('invoiceView').classList.toggle('active', view === 'invoice');
   }
 
-  // ---- INIT ----
+  // INIT
   document.getElementById('invDate').value = new Date().toISOString().split('T')[0];
   addLine('Domestic Clean', '3.0', '40.00');
   renderSchedule();
 
-  // register service worker so the app can work offline and be installable
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('/Ahua-Schedule/sw.js')
-        .then(reg => console.log('Service worker registered:', reg.scope))
+        .then(reg => console.log('Service worker registered'))
         .catch(err => console.warn('Service worker registration failed:', err));
     });
   }
